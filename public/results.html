@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Results</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Manage Results</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li class="nav-item"><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                    <li class="nav-item"><a href="students.html"><i class="fas fa-users"></i> Students</a></li>
+                    <li class="nav-item"><a href="subjects.html"><i class="fas fa-book"></i> Subjects</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <h2>Result Management</h2>
+            <form id="resultForm">
+                <div class="form-group">
+                    <label for="studentID">Student ID:</label>
+                    <input type="text" id="studentID" required />
+                </div>
+                <div class="form-group">
+                    <label for="subjectCode">Subject Code:</label>
+                    <input type="text" id="subjectCode" required />
+                </div>
+                <div class="form-group">
+                    <label for="marks">Marks:</label>
+                    <input type="number" id="marks" required />
+                </div>
+                <button type="submit" class="add-button">Add Result</button>
+            </form>
+            <h3>Result List</h3>
+            <table id="resultsTable">
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Subject Code</th>
+                        <th>Marks</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsBody">
+                    <tr>
+                        <td>009</td>
+                        <td>1</td>
+                        <td>70</td>
+                        <td>
+                            <button class="edit-button">Edit</button>
+                            <button class="delete-button">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Alliance School of Advanced Computing</p>
+        </div>
+    </footer>
+    <script defer src="results.js"></script>
+</body>
+</html>

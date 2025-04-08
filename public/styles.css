@@ -1,0 +1,333 @@
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f7f9;
+  color: #333;
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+header {
+  background: linear-gradient(135deg, #6a11cb, #2575fc); /* Gradient header */
+  color: white;
+  padding: 20px 0;
+}
+
+header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header .logo h1 {
+  margin: 0;
+  font-size: 2em;
+}
+
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+}
+
+nav ul li.nav-item {
+  margin-left: 20px;
+}
+
+nav ul li.nav-item a {
+  text-decoration: none;
+  color: white;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+nav ul li.nav-item a i {
+  margin-right: 8px;
+}
+
+nav ul li.nav-item a:hover, nav ul li.nav-item a.active {
+  color: #cce0ff;
+}
+
+main {
+  padding: 40px 0;
+  text-align: center;
+  flex-grow: 1;
+}
+
+.hero {
+  background-color: white;
+  padding: 60px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.hero h2 {
+  font-size: 2.5em;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.hero p {
+  font-size: 1.1em;
+  margin-bottom: 30px;
+}
+
+.cta-button {
+  background-color: #00b8d4; /* Teal button */
+  color: rgb(255, 255, 255);
+  padding: 15px 30px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.cta-button:hover {
+  background-color: #0097a7;
+}
+
+form {
+  background-color: rgb(219, 234, 237);
+  padding: 30px;
+  color: #000000; /* Added semicolon */
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(204, 5, 5, 0.15);
+  margin: 20px auto;
+  width: 400px;
+  text-align: left;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+input[type="text"], input[type="number"] {
+  width: calc(100% - 22px);
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-sizing: border-box;
+  font-size: 1em;
+}
+
+.add-button {
+  background-color: #28a745;
+  color: rgb(255, 255, 255);
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+}
+
+.add-button:hover {
+  background-color: #218838;
+}
+
+table {
+  margin: 20px auto;
+  border-collapse: collapse;
+  width: 80%;
+  max-width: 800px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 12px 15px;
+  text-align: left;
+}
+
+thead {
+  background-color: #007bff;
+  color: white;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Edit Button */
+.edit-button {
+  background-color: #007bff !important; /* Blue for Edit */
+  color: white !important;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 3px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  font-size: 1em;
+  font-weight: 500;
+}
+
+.edit-button:hover {
+  background-color: #0056b3 !important; /* Darker blue on hover */
+  transform: scale(1.05); /* Slight scale effect */
+}
+
+/* Delete Button */
+.delete-button {
+  background-color: #dc3545 !important; /* Red for Delete */
+  color: white !important;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 3px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  font-size: 1em;
+  font-weight: 500;
+}
+
+.delete-button:hover {
+  background-color: #c82333 !important; /* Darker red on hover */
+  transform: scale(1.05); /* Slight scale effect */
+}
+
+footer {
+  background-color: #343a40;
+  color: white;
+  padding: 20px 0;
+  text-align: center;
+}
+
+footer .container {
+  text-align: center;
+}
+
+/* analytics.html specific styles */
+.container.analytics {
+  max-width: 600px;
+  width: 90%;
+  margin: auto; /* Centers the box horizontally */
+  padding: 30px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  text-align: center;
+
+  /* FLEXBOX to center both horizontally & vertically */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh; /* Adjust height to center properly */
+}
+
+/* Ensure the form is centered */
+.container.analytics form {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Make input fields and labels properly aligned */
+.container.analytics .form-group {
+  width: 100%;
+  text-align: left;
+}
+
+.container.analytics label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.container.analytics input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1em;
+}
+
+/* Button fix */
+.container.analytics button {
+  width: 100%;
+  max-width: 130px; /* Restrict button width */
+  background-color: #007bff;
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+}
+
+.container.analytics button:hover {
+  background-color: #0056b3;
+}
+
+/* CGPA Result Display */
+.container.analytics #cgpaResult {
+  font-size: 1.2em;
+  margin-top: 20px;
+  color: #28a745;
+  font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  nav ul {
+    padding: 10px 0;
+  }
+
+  nav ul li {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  form {
+    width: 90%;
+  }
+}
+
+/* ... your existing styles ... */
+
+#subjectForm button[type="submit"] {
+  background-color: hsl(265, 46%, 39%); /* Change to your desired color */
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+}
+
+#subjectForm button[type="submit"]:hover {
+  background-color: #0fd33d; /* Darker color on hover */
+}
+
+/* ... rest of your existing styles ... */
