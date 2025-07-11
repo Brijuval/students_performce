@@ -25,8 +25,8 @@ connectDB();
 const studentRoutes = require('./routes/studentRoutes');
 const subjectRoutes = require('./routes/subjectRoutes');
 const resultRoutes = require('./routes/resultRoutes');
-const analyticsRoutes = require("./routes/analyticsRoutes"); // Import analyticsRoutes
-const cgpa = require('./routes/cgpa');
+const analyticsRoutes = require('./routes/analyticsRoutes'); // Correct import
+
 
 // Optional: Log the type of imported routes for debugging
 console.log(
@@ -40,7 +40,6 @@ console.log(
 app.use('/api/students', studentRoutes);
 app.use('/api/subjects', subjectRoutes);
 app.use('/api/results', resultRoutes);
-app.use('/api/cgpa', cgpa);
 
 
 // Then mount analyticsRoutes

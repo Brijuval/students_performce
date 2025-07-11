@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Student Performance Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="dashboard.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Student Performance Dashboard</h1>
+  </header>
+  <main>
+    <section class="card">
+      <form id="single-student-form" autocomplete="off">
+        <label>
+          <span>Student Roll Number:</span>
+          <input id="studentIDInput" type="text" placeholder="e.g. 33" required />
+        </label>
+        <button type="submit">Show Performance</button>
+      </form>
+      <div id="studentInfo"></div>
+      <div class="chart-container">
+        <canvas id="subjectBarChart"></canvas>
+      </div>
+    </section>
+
+    <section class="card">
+      <form id="compare-form" autocomplete="off">
+        <label>
+          <span>Student 1 Roll No:</span>
+          <input id="student1Input" type="text" placeholder="e.g. 33" required />
+        </label>
+        <label>
+          <span>Student 2 Roll No:</span>
+          <input id="student2Input" type="text" placeholder="e.g. 70" required />
+        </label>
+        <button type="submit">Compare</button>
+      </form>
+      <div class="chart-container">
+        <canvas id="compareBarChart"></canvas>
+      </div>
+      <div id="compareTable"></div>
+    </section>
+  </main>
+  <footer>
+    <p>&copy; 2025 Alliance School of Advanced Computing</p>
+  </footer>
+  <script src="dashboard.js"></script>
+</body>
+</html>

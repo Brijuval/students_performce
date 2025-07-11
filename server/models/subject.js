@@ -6,7 +6,5 @@ const SubjectSchema = new mongoose.Schema({
   credit: { type: Number, required: true }
 });
 
-// Prevent model overwrite
 const Subject = mongoose.models.Subject || mongoose.model("Subject", SubjectSchema);
-
 module.exports = Subject;
