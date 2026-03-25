@@ -22,6 +22,7 @@ build/
 
 # Pytest
 .cache
+.pytest_cache/
 
 # Django specific
 *.log
@@ -31,4 +32,18 @@ build/
 db.sqlite3
 /media
 /static/
-__init__.py
+/staticfiles/
+logs/
+
+# Node
+node_modules/
+package-lock.json
+
+# Environment files
+.env
+.env.production
+
+# OS
+.DS_Store
+Thumbs.db
+
