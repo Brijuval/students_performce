@@ -1,6 +1,6 @@
-Django
-Django REST framework
-psycopg2-binary
-django-cors-headers
-cryptography
-python-decouple
+Django>=4.2,<7.0
+djangorestframework>=3.14
+django-filter>=23.0
+django-cors-headers>=4.0
+psycopg2-binary>=2.9
+python-decouple>=3.8
