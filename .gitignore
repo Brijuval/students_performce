@@ -31,4 +31,3 @@ build/
 db.sqlite3
 /media
 /static/
-__init__.py
