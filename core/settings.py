@@ -109,8 +109,6 @@ CORS_ALLOWED_ORIGINS = config(
 CORS_ALLOW_ALL_ORIGINS = config("CORS_ALLOW_ALL_ORIGINS", default=True, cast=bool)
 CORS_ALLOW_CREDENTIALS = True
 
-import os
-
 # Create logs directory if it doesn't exist
 LOGS_DIR = BASE_DIR / "logs"
 LOGS_DIR.mkdir(exist_ok=True)
