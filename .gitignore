@@ -31,3 +31,12 @@ build/
 db.sqlite3
 /media
 /static/
+
+# Environment variables
+.env
+
+# Node.js
+node_modules/
+
+# Django log files (keep the directory)
+backend/logs/*.log
