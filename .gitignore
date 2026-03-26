@@ -1,33 +1,19 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
+# Dependencies
+node_modules/
 
-# C extensions
-*.so
+# Environment variables
+.env
 
-# Distribution / packaging
-.Python
--env/
--env.bak/
-env/
-venv/
-*.egg-info/
-dist/
-build/
+# Logs
+logs/
+*.log
 
 # VS Code settings
 .vscode/
 
-# Pytest
-.cache
+# VS Code Code Runner temp files
+tempCodeRunnerFile.*
 
-# Django specific
-*.log
-*.pot
-*.pyc
-*.pyo
-db.sqlite3
-/media
-/static/
+# Build output
+dist/
+build/

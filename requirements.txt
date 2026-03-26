@@ -1,6 +1,0 @@
-Django
-Django REST framework
-psycopg2-binary
-django-cors-headers
-cryptography
-python-decouple
