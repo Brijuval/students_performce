@@ -2,45 +2,33 @@
 node_modules/
 npm-debug.log*
 
-# Byte-compiled / optimized / DLL files
+# Python
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
-
-# C extensions
 *.so
-
-# Distribution / packaging
+*.egg-info/
 .Python
--env/
--env.bak/
 env/
 venv/
-*.egg-info/
-dist/
-build/
-
-# VS Code settings
-.vscode/
-
-# Pytest
 .cache
 
 # Django specific
-*.log
-*.pot
-*.pyc
-*.pyo
 db.sqlite3
 /media
 /static/
+backend/logs/*.log
+
+# Build output
+dist/
+build/
 
 # Environment variables
 .env
 
-# Node.js
-node_modules/
+# VS Code settings
+.vscode/
 
-# Django log files (keep the directory)
-backend/logs/*.log
+# VS Code Code Runner temp files
+tempCodeRunnerFile.*
