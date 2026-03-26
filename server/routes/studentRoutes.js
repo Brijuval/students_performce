@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
-const Student = require("../models/Student");
+const Student = require("../models/student");
 
 // Add a new student
 router.post("/", async (req, res) => {

@@ -5,108 +5,6 @@ const express = require("express");
 const router = express.Router();
 
 // Compute Individual CGPA
-router.get("/cgpa/:studentID", async (req, res) => {
-  const studentID = req.params.studentID;
-
-  try {
-      // Find student by rollNumber (NOT ObjectId!)
-      const student = await Student.findOne({ rollNumber: studentID });
-
-      if (!student) {
-          return res.status(404).json({ error: "Student not found" });
-      }
-
-      const pipeline = [
-          { $match: { studentID: studentID } }, // studentID is rollNumber (string)
-          {
-              $lookup: {
-                  from: "subjects",
-                  localField: "subjectCode",
-                  foreignField: "subjectCode",
-                  as: "subjectInfo"
-              }
-          },
-          { $unwind: { path: "$subjectInfo", preserveNullAndEmptyArrays: true } },
-          {
-              $addFields: {
-                  gradePoints: {
-                      $switch: {
-                          branches: [
-                              { case: { $gte: ["$marks", 90] }, then: 10 },
-                              { case: { $gte: ["$marks", 80] }, then: 9 },
-                              { case: { $gte: ["$marks", 70] }, then: 8 },
-                              { case: { $gte: ["$marks", 60] }, then: 7 },
-                              { case: { $gte: ["$marks", 50] }, then: 6 },
-                              { case: { $gte: ["$marks", 40] }, then: 5 }
-                          ],
-                          default: 0
-                      }
-                  },
-                  subjectCredits: "$subjectInfo.credit", // fix here
-                  subjectName: "$subjectInfo.name",      // fix here
-                  resultMarks: "$marks"
-              }
-          },
-          {
-              $addFields: {
-                  weightedPoints: {
-                      $multiply: ["$gradePoints", { $ifNull: ["$subjectCredits", 0] }]
-                  }
-              }
-          },
-          {
-              $group: {
-                  _id: "$studentID",
-                  totalWeightedPoints: { $sum: "$weightedPoints" },
-                  totalCredits: { $sum: { $ifNull: ["$subjectCredits", 0] } },
-                  subjectDetails: {
-                      $push: {
-                          subjectName: "$subjectName",
-                          marks: "$resultMarks",
-                          credits: "$subjectCredits",
-                          gradePoints: "$gradePoints",
-                          weightedPoints: "$weightedPoints"
-                      }
-                  }
-              }
-          },
-          {
-              $project: {
-                  _id: 0,
-                  studentID: "$_id",
-                  totalWeightedPoints: 1,
-                  totalCredits: 1,
-                  subjectDetails: 1,
-                  cgpa: {
-                      $cond: [
-                          { $eq: ["$totalCredits", 0] },
-                          0,
-                          { $divide: ["$totalWeightedPoints", "$totalCredits"] }
-                      ]
-                  }
-              }
-          }
-      ];
-
-      const result = await Result.aggregate(pipeline);
-      const cgpa = result.length > 0 ? result[0].cgpa : 0;
-      const status = cgpa >= 5.0 ? "Pass" : "Fail";
-
-      res.json({
-          studentID,
-          name: student.name,
-          rollNumber: student.rollNumber,
-          department: student.department,
-          cgpa: cgpa.toFixed(2),
-          status
-      });
-  } catch (error) {
-      console.error("Error computing CGPA:", error);
-      res.status(500).json({ error: "Server Error" });
-  }
-});
-
-// Subject Performance Analysis
 router.get("/cgpa/subject-analysis", async (req, res) => {
     try {
         const analysis = await Result.aggregate([
@@ -333,6 +231,108 @@ router.get("/cgpa/pass-fail", async (req, res) => {
     }
 });
 
+router.get("/cgpa/:studentID", async (req, res) => {
+  const studentID = req.params.studentID;
+
+  try {
+      // Find student by rollNumber (NOT ObjectId!)
+      const student = await Student.findOne({ rollNumber: studentID });
+
+      if (!student) {
+          return res.status(404).json({ error: "Student not found" });
+      }
+
+      const pipeline = [
+          { $match: { studentID: studentID } }, // studentID is rollNumber (string)
+          {
+              $lookup: {
+                  from: "subjects",
+                  localField: "subjectCode",
+                  foreignField: "subjectCode",
+                  as: "subjectInfo"
+              }
+          },
+          { $unwind: { path: "$subjectInfo", preserveNullAndEmptyArrays: true } },
+          {
+              $addFields: {
+                  gradePoints: {
+                      $switch: {
+                          branches: [
+                              { case: { $gte: ["$marks", 90] }, then: 10 },
+                              { case: { $gte: ["$marks", 80] }, then: 9 },
+                              { case: { $gte: ["$marks", 70] }, then: 8 },
+                              { case: { $gte: ["$marks", 60] }, then: 7 },
+                              { case: { $gte: ["$marks", 50] }, then: 6 },
+                              { case: { $gte: ["$marks", 40] }, then: 5 }
+                          ],
+                          default: 0
+                      }
+                  },
+                  subjectCredits: "$subjectInfo.credit", // fix here
+                  subjectName: "$subjectInfo.name",      // fix here
+                  resultMarks: "$marks"
+              }
+          },
+          {
+              $addFields: {
+                  weightedPoints: {
+                      $multiply: ["$gradePoints", { $ifNull: ["$subjectCredits", 0] }]
+                  }
+              }
+          },
+          {
+              $group: {
+                  _id: "$studentID",
+                  totalWeightedPoints: { $sum: "$weightedPoints" },
+                  totalCredits: { $sum: { $ifNull: ["$subjectCredits", 0] } },
+                  subjectDetails: {
+                      $push: {
+                          subjectName: "$subjectName",
+                          marks: "$resultMarks",
+                          credits: "$subjectCredits",
+                          gradePoints: "$gradePoints",
+                          weightedPoints: "$weightedPoints"
+                      }
+                  }
+              }
+          },
+          {
+              $project: {
+                  _id: 0,
+                  studentID: "$_id",
+                  totalWeightedPoints: 1,
+                  totalCredits: 1,
+                  subjectDetails: 1,
+                  cgpa: {
+                      $cond: [
+                          { $eq: ["$totalCredits", 0] },
+                          0,
+                          { $divide: ["$totalWeightedPoints", "$totalCredits"] }
+                      ]
+                  }
+              }
+          }
+      ];
+
+      const result = await Result.aggregate(pipeline);
+      const cgpa = result.length > 0 ? result[0].cgpa : 0;
+      const status = cgpa >= 5.0 ? "Pass" : "Fail";
+
+      res.json({
+          studentID,
+          name: student.name,
+          rollNumber: student.rollNumber,
+          department: student.department,
+          cgpa: cgpa.toFixed(2),
+          status
+      });
+  } catch (error) {
+      console.error("Error computing CGPA:", error);
+      res.status(500).json({ error: "Server Error" });
+  }
+});
+
+// Subject Performance Analysis
 router.get("/performance/:studentID", async (req, res) => {
     const studentID = req.params.studentID;
     try {
