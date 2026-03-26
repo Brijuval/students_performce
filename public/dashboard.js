@@ -19,20 +19,29 @@ document.addEventListener("DOMContentLoaded", function() {
 
     studentInfo.textContent = "Loading...";
     if (barChartObj) barChartObj.destroy();
+    showLoading();
 
     try {
-      const res = await fetch(`http://localhost:5000/api/analytics/performance/${rollNumber}`);
-      const data = await res.json();
+      const result = await api.getStudentPerformance(rollNumber);
 
-      if (!res.ok || !data.subjectPerformance || !data.subjectPerformance.length) {
+      if (!result.success) {
+        studentInfo.textContent = "No data found for this student.";
+        showNotification(result.message, 'error');
+        return;
+      }
+
+      const data = result.data;
+
+      if (!data || (!data.subjectPerformance?.length && !data.subject_performance?.length)) {
         studentInfo.textContent = "No data found for this student.";
         return;
       }
 
-      studentInfo.textContent = `${data.name} (${data.rollNumber}) - ${data.department}`;
+      const performance = data.subjectPerformance || data.subject_performance || [];
+      studentInfo.textContent = `${data.name || ''} (${data.rollNumber || data.roll_number || rollNumber}) - ${data.department || ''}`;
 
-      const labels = data.subjectPerformance.map(s => s.subject);
-      const marks = data.subjectPerformance.map(s => s.marks);
+      const labels = performance.map(s => s.subject || s.subject_name || '');
+      const marks = performance.map(s => s.marks || s.marks_obtained || 0);
 
       barChartObj = new Chart(barChartCanvas, {
         type: 'bar',
@@ -51,6 +60,9 @@ document.addEventListener("DOMContentLoaded", function() {
       });
     } catch (err) {
       studentInfo.textContent = "Error loading performance.";
+      showNotification("Error loading performance: " + err.message, 'error');
+    } finally {
+      hideLoading();
     }
   };
 
@@ -70,20 +82,43 @@ document.addEventListener("DOMContentLoaded", function() {
 
     compareTable.innerHTML = "Loading...";
     if (compareChartObj) compareChartObj.destroy();
+    showLoading();
 
     try {
-      const res = await fetch(`http://localhost:5000/api/analytics/compare?student1=${s1}&student2=${s2}`);
-      const data = await res.json();
+      const [result1, result2] = await Promise.all([
+        api.getStudentPerformance(s1),
+        api.getStudentPerformance(s2)
+      ]);
+
+      if (!result1.success || !result2.success) {
+        compareTable.innerHTML = "Both students must exist and have results!";
+        showNotification("Could not load student data for comparison.", 'error');
+        return;
+      }
+
+      const data = [result1.data, result2.data];
 
       if (!Array.isArray(data) || data.length !== 2) {
         compareTable.innerHTML = "Both students must exist and have results!";
         return;
       }
 
-      // Merge all subjects
-      const labels = Array.from(new Set([...data[0].subjects.map(x=>x.subject), ...data[1].subjects.map(x=>x.subject)]));
-      const marks1 = labels.map(l => (data[0].subjects.find(s => s.subject === l) || {}).marks || 0);
-      const marks2 = labels.map(l => (data[1].subjects.find(s => s.subject === l) || {}).marks || 0);
+      const getSubjects = (d) => d.subjectPerformance || d.subject_performance || d.subjects || [];
+      const getSubjectName = (s) => s.subject || s.subject_name || '';
+      const getMarks = (s) => s.marks || s.marks_obtained || 0;
+
+      // Merge all subjects using Maps for O(1) lookup
+      const subjects1 = getSubjects(data[0]);
+      const subjects2 = getSubjects(data[1]);
+      const marks1Map = new Map(subjects1.map(s => [getSubjectName(s), getMarks(s)]));
+      const marks2Map = new Map(subjects2.map(s => [getSubjectName(s), getMarks(s)]));
+
+      const labels = Array.from(new Set([
+        ...subjects1.map(getSubjectName),
+        ...subjects2.map(getSubjectName)
+      ]));
+      const marks1 = labels.map(l => marks1Map.get(l) || 0);
+      const marks2 = labels.map(l => marks2Map.get(l) || 0);
 
       // Draw chart
       compareChartObj = new Chart(compareBarChart, {
@@ -91,22 +126,25 @@ document.addEventListener("DOMContentLoaded", function() {
         data: {
           labels,
           datasets: [
-            { label: data[0].name, data: marks1, backgroundColor: "rgba(54,162,235,0.7)" },
-            { label: data[1].name, data: marks2, backgroundColor: "rgba(255,99,132,0.7)" }
+            { label: data[0].name || s1, data: marks1, backgroundColor: "rgba(54,162,235,0.7)" },
+            { label: data[1].name || s2, data: marks2, backgroundColor: "rgba(255,99,132,0.7)" }
           ]
         },
         options: { responsive: true, scales: { y: { beginAtZero: true, max: 100 } } }
       });
 
       // Comparison Table
-      let html = `<table><tr><th>Subject</th><th>${data[0].name}</th><th>${data[1].name}</th></tr>`;
-      labels.forEach((subj,i) => {
+      let html = `<table><tr><th>Subject</th><th>${data[0].name || s1}</th><th>${data[1].name || s2}</th></tr>`;
+      labels.forEach((subj, i) => {
         html += `<tr><td>${subj}</td><td>${marks1[i]}</td><td>${marks2[i]}</td></tr>`;
       });
       html += "</table>";
       compareTable.innerHTML = html;
     } catch (err) {
       compareTable.innerHTML = "Error loading comparison.";
+      showNotification("Error loading comparison: " + err.message, 'error');
+    } finally {
+      hideLoading();
     }
   };
 });

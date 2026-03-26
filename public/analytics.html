@@ -8,6 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="config.js"></script>
+    <script src="api-client.js"></script>
+    <script src="ui-helpers.js"></script>
 </head>
 <body>
     <header>
@@ -78,35 +81,38 @@
                 const studentID = document.getElementById("studentID").value;
                 console.log("Student ID entered:", studentID);
 
+                showLoading();
                 try {
-                    const res = await fetch(`http://localhost:5000/api/analytics/cgpa/${studentID}`);
-                    console.log("Fetch status:", res.status);
+                    const result = await api.getStudentPerformance(studentID);
+                    hideLoading();
 
-                    const data = await res.json();
+                    const data = result.data;
                     console.log("Response data:", data);
 
-                    if (res.ok) {
-                        if (data.message === "No results found") {
+                    if (result.success) {
+                        if (!data || data.message === "No results found") {
                             cgpaResult.textContent = `No results found for Student ID: ${studentID}.`;
                         } else {
                             cgpaResult.innerHTML = `
-                                <strong>Student Name:</strong> ${data.name}<br>
-                                <strong>Roll Number:</strong> ${data.rollNumber}<br>
-                                <strong>Department:</strong> ${data.department}<br>
-                                <strong>CGPA:</strong> ${data.cgpa}<br>
+                                <strong>Student Name:</strong> ${data.name || ''}<br>
+                                <strong>Roll Number:</strong> ${data.rollNumber || data.roll_number || ''}<br>
+                                <strong>Department:</strong> ${data.department || ''}<br>
+                                <strong>CGPA:</strong> ${data.cgpa || 'N/A'}<br>
                                 <strong>Status:</strong> ${data.status === "Pass" ? "✅ Pass" : "❌ Fail"}
                             `;
                         }
                     } else {
-                        cgpaResult.textContent = `Error: ${data.error || "Unable to compute CGPA"}`;
+                        cgpaResult.textContent = `Error: ${result.message || "Unable to compute CGPA"}`;
                     }
                 } catch (error) {
+                    hideLoading();
                     console.error("Error fetching CGPA:", error);
                     cgpaResult.textContent = "Server Error";
+                    showNotification("Error fetching CGPA: " + error.message, 'error');
                 }
             });
         });
     </script>
-    <defer src="analytics.js"></defer>
+    <script defer src="analytics.js"></script>
 </body>
 </html>
