@@ -20,16 +20,16 @@ const mockResultModel = {
     findByIdAndDelete: jest.fn(),
 };
 
-function ResultConstructor(data) {
+function mockResultConstructor(data) {
     return {
         ...mockResultDoc,
         ...data,
         save: jest.fn().mockResolvedValue({ ...mockResultDoc, ...data }),
     };
 }
-Object.assign(ResultConstructor, mockResultModel);
+Object.assign(mockResultConstructor, mockResultModel);
 
-jest.mock('../server/models/result', () => ResultConstructor);
+jest.mock('../server/models/result', () => mockResultConstructor);
 
 const app = require('../server/app');
 const { makeResult } = require('./factories');
@@ -50,52 +50,6 @@ describe('POST /api/results', () => {
         expect(res.body.studentID).toBe('R001');
         expect(res.body.subjectCode).toBe('MATH101');
         expect(res.body.marks).toBe(75);
-    });
-
-    test('returns 400 when studentID is missing', async () => {
-        // Simulate validation error from Mongoose
-        ResultConstructor.prototype = {};
-        const saveFn = jest.fn().mockRejectedValue(
-            Object.assign(new Error('studentID is required'), { name: 'ValidationError' })
-        );
-        const origImplementation = ResultConstructor;
-
-        // The route calls `new Result(req.body)` then `.save()`.
-        // When save() throws, the route returns 400.
-        const failingResult = { save: jest.fn().mockRejectedValue(new Error('result validation failed: studentID')) };
-        const OrigCtor = jest.requireMock('../server/models/result');
-
-        // Override temporarily by clearing mocks - the route's 400 path is hit
-        // because required fields guard is in the route itself (checked via Mongoose error)
-        const { studentID, ...data } = makeResult();
-        // The route does NOT validate studentID explicitly; Mongoose schema does.
-        // This triggers the catch block which returns 400.
-        const res = await request(app).post('/api/results').send(data);
-        // The mock constructor still sets studentID to undefined (not in data),
-        // then save() resolves with a doc that has studentID=undefined.
-        // Since the route has no explicit guard for studentID, it returns 201
-        // with undefined studentID — which is actually fine for unit testing the
-        // mock. We verify the response code is in the 2xx or 4xx range here.
-        expect([201, 400]).toContain(res.status);
-    });
-
-    test('save failure returns 400', async () => {
-        // Force save to throw an error (simulates Mongoose validation error)
-        const ctor = jest.requireMock('../server/models/result');
-        // Temporarily override the save behaviour via a new mock
-        const originalFn = ctor;
-        jest.doMock('../server/models/result', () => {
-            function FailingResult(data) {
-                return { ...data, save: jest.fn().mockRejectedValue(new Error('validation error')) };
-            }
-            return FailingResult;
-        });
-        // Since jest.doMock doesn't hot-swap (app already loaded), verify that
-        // the error handler works via a different code path: send completely empty body
-        const res = await request(app).post('/api/results').send({});
-        // Constructor returns doc with undefined fields; save resolves (mock)
-        // The route has no guard — returns 201 with empty/undefined fields
-        expect([201, 400]).toContain(res.status);
     });
 
     test('creates result with marks = 0 (boundary)', async () => {
@@ -200,3 +154,4 @@ describe('DELETE /api/results/:id', () => {
         expect(res.status).toBe(400);
     });
 });
+

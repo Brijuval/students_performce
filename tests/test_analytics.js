@@ -14,33 +14,33 @@ const mockStudentModel = {
     find: jest.fn(),
     aggregate: jest.fn(),
 };
-function StudentConstructor(data) {
+function mockStudentConstructor(data) {
     return { ...data, save: jest.fn().mockResolvedValue(data) };
 }
-Object.assign(StudentConstructor, mockStudentModel);
-jest.mock('../server/models/student', () => StudentConstructor);
+Object.assign(mockStudentConstructor, mockStudentModel);
+jest.mock('../server/models/student', () => mockStudentConstructor);
 
 const mockSubjectModel = { find: jest.fn() };
-function SubjectConstructor(data) {
+function mockSubjectConstructor(data) {
     return { ...data, save: jest.fn().mockResolvedValue(data) };
 }
-Object.assign(SubjectConstructor, mockSubjectModel);
-jest.mock('../server/models/subject', () => SubjectConstructor);
+Object.assign(mockSubjectConstructor, mockSubjectModel);
+jest.mock('../server/models/subject', () => mockSubjectConstructor);
 
 const mockResultModel = {
     find: jest.fn(),
     aggregate: jest.fn(),
 };
-function ResultConstructor(data) {
+function mockResultConstructor(data) {
     return { ...data, save: jest.fn().mockResolvedValue(data) };
 }
-Object.assign(ResultConstructor, mockResultModel);
-jest.mock('../server/models/result', () => ResultConstructor);
+Object.assign(mockResultConstructor, mockResultModel);
+jest.mock('../server/models/result', () => mockResultConstructor);
 
 const app = require('../server/app');
 
 beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
 });
 
 // ---------------------------------------------------------------------------

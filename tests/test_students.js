@@ -26,12 +26,12 @@ const mockStudentModel = {
 };
 
 // Constructor mock: returns a document object with a save() method
-function StudentConstructor(data) {
+function mockStudentConstructor(data) {
     return { ...mockStudentDoc, ...data, save: jest.fn().mockResolvedValue({ ...mockStudentDoc, ...data }) };
 }
-Object.assign(StudentConstructor, mockStudentModel);
+Object.assign(mockStudentConstructor, mockStudentModel);
 
-jest.mock('../server/models/student', () => StudentConstructor);
+jest.mock('../server/models/student', () => mockStudentConstructor);
 
 // --- Mock mongoose.Types.ObjectId for ID validation ---
 // The real mongoose is still used for ObjectId generation; we keep it intact.
