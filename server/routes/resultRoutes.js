@@ -50,10 +50,4 @@ router.delete("/:id", async (req, res) => {
 });
 
 
-[
-    { $group: { _id: "$subjectCode", avgMarks: { $avg: "$marks" } } },
-    { $sort: { avgMarks: -1 } }
-  ]
-
-  
 module.exports = router;

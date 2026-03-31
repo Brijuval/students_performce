@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const container = document.getElementById("passFailStats");
 
     try {
-        const res = await fetch("http://localhost:5000/api/students/pass-fail");
+        const res = await fetch("http://localhost:5000/api/analytics/cgpa/pass-fail");
         const data = await res.json();
 
         if (!res.ok) throw new Error(data.error);
