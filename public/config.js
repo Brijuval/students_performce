@@ -1,6 +1,6 @@
 // API Configuration
 const API_CONFIG = {
-    BASE_URL: 'http://localhost:8000/api',
+    BASE_URL: 'http://localhost:5000/api',
     API_TIMEOUT: 30000, // 30 seconds
     DEFAULT_PAGE_SIZE: 10,
 
@@ -51,5 +51,5 @@ const NOTIFY_CONFIG = {
 
 // Analytics thresholds
 const ANALYTICS_CONFIG = {
-    PASS_CGPA_THRESHOLD: 4,
+    PASS_CGPA_THRESHOLD: 5,
 };

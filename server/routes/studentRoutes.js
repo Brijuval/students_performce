@@ -42,72 +42,7 @@ router.get("/", async (req, res) => {
     }
 });
 
-// Get a single student by ID
-router.get("/:id", async (req, res) => {
-    try {
-        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-            return res.status(400).json({ error: "Invalid student ID format" });
-        }
-
-        const student = await Student.findById(req.params.id);
-        if (!student) {
-            return res.status(404).json({ error: "Student not found" });
-        }
-        res.json(student);
-    } catch (error) {
-        res.status(500).json({ error: "Error fetching student", details: error.message });
-    }
-});
-
-// Update a student by ID
-router.put("/:id", async (req, res) => {
-    try {
-        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-            return res.status(400).json({ error: "Invalid student ID format" });
-        }
-
-        const { name, rollNumber, department, year, subjects } = req.body;
-        const updatedStudent = await Student.findByIdAndUpdate(
-            req.params.id,
-            { name, rollNumber, department, year, subjects },
-            { new: true, runValidators: true }
-        );
-        if (rollNumber) {
-            const existingStudent = await Student.findOne({ rollNumber, _id: { $ne: req.params.id } });
-            if (existingStudent) {
-                return res.status(400).json({ error: "Roll number already exists." });
-            }
-        }
-
-        if (!updatedStudent) {
-            return res.status(404).json({ error: "Student not found" });
-        }
-        res.json({ message: "Student updated successfully", updatedStudent });
-    } catch (error) {
-        res.status(400).json({ error: "Invalid data", details: error.message });
-    }
-});
-
-// Delete a student by ID
-router.delete("/:id", async (req, res) => {
-    try {
-        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-            return res.status(400).json({ error: "Invalid student ID format" });
-        }
-
-        const deletedStudent = await Student.findByIdAndDelete(req.params.id);
-        if (!deletedStudent) {
-            return res.status(404).json({ error: "Student not found" });
-        }
-        res.json({ message: "Student deleted successfully" });
-    } catch (error) {
-        res.status(500).json({ error: "Server error", details: error.message });
-    }
-});
-
-// Get CGPA and analytics
-
-
+// Get CGPA and analytics (must be defined before /:id to avoid being shadowed)
 router.get("/cgpa-analytics", async (req, res) => {
     try {
         console.log("📢 Fetching CGPA analytics...");
@@ -154,6 +89,71 @@ router.get("/cgpa-analytics", async (req, res) => {
     }
 });
 
+// Get a single student by ID
+router.get("/:id", async (req, res) => {
+    try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ error: "Invalid student ID format" });
+        }
+
+        const student = await Student.findById(req.params.id);
+        if (!student) {
+            return res.status(404).json({ error: "Student not found" });
+        }
+        res.json(student);
+    } catch (error) {
+        res.status(500).json({ error: "Error fetching student", details: error.message });
+    }
+});
+
+// Update a student by ID
+router.put("/:id", async (req, res) => {
+    try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ error: "Invalid student ID format" });
+        }
+
+        const { name, rollNumber, department, year, subjects } = req.body;
+
+        // Check for duplicate rollNumber before updating
+        if (rollNumber) {
+            const existingStudent = await Student.findOne({ rollNumber, _id: { $ne: req.params.id } });
+            if (existingStudent) {
+                return res.status(400).json({ error: "Roll number already exists." });
+            }
+        }
+
+        const updatedStudent = await Student.findByIdAndUpdate(
+            req.params.id,
+            { name, rollNumber, department, year, subjects },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedStudent) {
+            return res.status(404).json({ error: "Student not found" });
+        }
+        res.json({ message: "Student updated successfully", updatedStudent });
+    } catch (error) {
+        res.status(400).json({ error: "Invalid data", details: error.message });
+    }
+});
+
+// Delete a student by ID
+router.delete("/:id", async (req, res) => {
+    try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ error: "Invalid student ID format" });
+        }
+
+        const deletedStudent = await Student.findByIdAndDelete(req.params.id);
+        if (!deletedStudent) {
+            return res.status(404).json({ error: "Student not found" });
+        }
+        res.json({ message: "Student deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ error: "Server error", details: error.message });
+    }
+});
 
 
 module.exports = router;
