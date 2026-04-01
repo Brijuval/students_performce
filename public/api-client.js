@@ -179,19 +179,19 @@ class APIClient {
     // ============ ANALYTICS ENDPOINTS ============
 
     async getAnalyticsSummary() {
-        return this.request(`${API_CONFIG.ENDPOINTS.ANALYTICS}summary/`);
+        return this.request(`${API_CONFIG.ENDPOINTS.ANALYTICS}cgpa/cgpa-stats`);
     }
 
     async getStudentPerformance(studentId) {
-        return this.request(`${API_CONFIG.ENDPOINTS.ANALYTICS}student-performance/${studentId}/`);
+        return this.request(`${API_CONFIG.ENDPOINTS.ANALYTICS}performance/${studentId}`);
     }
 
-    async getSubjectPerformance(subjectId) {
-        return this.request(`${API_CONFIG.ENDPOINTS.ANALYTICS}subject-performance/${subjectId}/`);
+    async getSubjectPerformance() {
+        return this.request(`${API_CONFIG.ENDPOINTS.ANALYTICS}cgpa/subject-analysis`);
     }
 
     async getClassReport() {
-        return this.request(`${API_CONFIG.ENDPOINTS.ANALYTICS}class-report/`);
+        return this.request(`${API_CONFIG.ENDPOINTS.ANALYTICS}cgpa/pass-fail`);
     }
 }
 
