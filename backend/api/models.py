@@ -124,11 +124,11 @@ class Result(models.Model):
     def calculate_grade(percentage: float) -> str:
         if percentage >= 90:
             return Result.GRADE_A
-        if percentage >= 75:
+        if percentage >= 80:
             return Result.GRADE_B
-        if percentage >= 60:
+        if percentage >= 70:
             return Result.GRADE_C
-        if percentage >= 40:
+        if percentage >= 60:
             return Result.GRADE_D
         return Result.GRADE_F
 
