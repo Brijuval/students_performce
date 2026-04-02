@@ -32,3 +32,18 @@ build/
 
 # VS Code Code Runner temp files
 tempCodeRunnerFile.*
+
+# Pytest
+.pytest_cache/
+
+# Django specific (additional)
+*.log
+*.pot
+/staticfiles/
+
+# Environment files (additional)
+.env.production
+
+# OS
+.DS_Store
+Thumbs.db
