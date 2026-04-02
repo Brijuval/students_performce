@@ -9,40 +9,39 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
   }
 
-  const API_BASE_URL = "http://localhost:5000/api/students";
-
-  async function fetchStudents() {
+  async function fetchStudents(params = {}) {
       loadingMessage.style.display = "block";
       errorMessage.style.display = "none";
+      showLoading();
 
       try {
-          const res = await fetch(API_BASE_URL);
-          if (!res.ok) throw new Error(`Server error: ${res.status}`);
+          const result = await api.getStudents(params);
 
-          const data = await res.json();
-          console.log("📩 API Response:", data);
-
-          if (!data || !Array.isArray(data.students)) {
-              throw new Error("Invalid API response: Expected 'students' array");
+          if (!result.success) {
+              throw new Error(result.message);
           }
 
+          const students = Array.isArray(result.data)
+              ? result.data
+              : (result.data?.results || result.data?.students || []);
+
           studentsBody.innerHTML = "";
-          data.students.forEach(student => {
+          students.forEach(student => {
               const row = document.createElement("tr");
               row.innerHTML = `
                   <td>${student.name || "N/A"}</td>
-                  <td>${student.rollNumber || "N/A"}</td>
+                  <td>${student.rollNumber || student.roll_number || "N/A"}</td>
                   <td>${student.department || "N/A"}</td>
-                  <td>${student.cgpa ? student.cgpa.toFixed(2) : "N/A"}</td>
+                  <td>${student.cgpa != null ? Number(student.cgpa).toFixed(2) : "N/A"}</td>
                   <td>
-                      <button class="edit-button" data-id="${student._id}" 
-                              data-name="${student.name}" 
-                              data-department="${student.department}" 
-                              data-year="${student.year}" 
-                              data-roll="${student.rollNumber}">
+                      <button class="edit-button" data-id="${student.id || student._id}"
+                              data-name="${student.name}"
+                              data-department="${student.department || ''}"
+                              data-year="${student.year || ''}"
+                              data-roll="${student.rollNumber || student.roll_number || ''}">
                           Edit
                       </button>
-                      <button class="delete-button" data-id="${student._id}">Delete</button>
+                      <button class="delete-button" data-id="${student.id || student._id}">Delete</button>
                   </td>
               `;
               studentsBody.appendChild(row);
@@ -51,16 +50,21 @@ document.addEventListener("DOMContentLoaded", () => {
           console.error("❌ Error fetching students:", err.message);
           errorMessage.textContent = `Error: ${err.message}`;
           errorMessage.style.display = "block";
+          showNotification(err.message, 'error');
       } finally {
           loadingMessage.style.display = "none";
+          hideLoading();
       }
   }
 
   async function isRollNumberUnique(rollNumber) {
       try {
-          const response = await fetch(API_BASE_URL);
-          const data = await response.json();
-          return !data.students.some(student => student.rollNumber === rollNumber);
+          const result = await api.getStudents({ search: rollNumber });
+          if (!result.success) return true;
+          const students = Array.isArray(result.data)
+              ? result.data
+              : (result.data?.results || result.data?.students || []);
+          return !students.some(s => (s.rollNumber || s.roll_number) === rollNumber);
       } catch (error) {
           console.error("❌ Error checking roll number uniqueness:", error);
           return false;
@@ -76,41 +80,33 @@ document.addEventListener("DOMContentLoaded", () => {
       const year = parseInt(document.getElementById("year").value.trim(), 10);
 
       if (!name || !rollNumber || !department || isNaN(year)) {
-          alert("❌ Please fill all fields correctly");
+          showNotification("❌ Please fill all fields correctly", 'error');
           return;
       }
 
       if (!(await isRollNumberUnique(rollNumber))) {
-          alert("❌ This roll number is already taken!");
+          showNotification("❌ This roll number is already taken!", 'error');
           return;
       }
 
       const studentData = { name, rollNumber, department, year };
+      showLoading();
 
       try {
-          const response = await fetch(API_BASE_URL, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(studentData)
-          });
+          const result = await api.createStudent(studentData);
 
-          if (!response.ok) {
-              const contentType = response.headers.get("content-type");
-              if (contentType && contentType.includes("application/json")) {
-                  const errorData = await response.json();
-                  throw new Error(errorData.error || "Failed to add student");
-              } else {
-                  const errorText = await response.text();
-                  throw new Error(errorText || "Failed to add student");
-              }
+          if (!result.success) {
+              throw new Error(result.message);
           }
 
-          alert("✅ Student added successfully!");
+          showNotification("✅ Student added successfully!", 'success');
           studentForm.reset();
           fetchStudents();
       } catch (error) {
           console.error("❌ Error adding student:", error.message);
-          alert(`Error adding student: ${error.message}`);
+          showNotification(`Error adding student: ${error.message}`, 'error');
+      } finally {
+          hideLoading();
       }
   });
 
@@ -132,56 +128,51 @@ document.addEventListener("DOMContentLoaded", () => {
           const newRoll = prompt("Enter new roll number:", currentRoll);
 
           if (newName && newDepartment && newYear && newRoll) {
+              showLoading();
               try {
-                  const res = await fetch(`${API_BASE_URL}/${id}`, {
-                      method: "PUT",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({
-                          name: newName.trim(),
-                          department: newDepartment.trim(),
-                          year: parseInt(newYear.trim(), 10),
-                          rollNumber: newRoll.trim()
-                      })
+                  const result = await api.updateStudent(id, {
+                      name: newName.trim(),
+                      department: newDepartment.trim(),
+                      year: parseInt(newYear.trim(), 10),
+                      rollNumber: newRoll.trim()
                   });
 
-                  if (!res.ok) {
-                      const errorData = await res.json();
-                      throw new Error(errorData.error || "Error updating student");
+                  if (!result.success) {
+                      throw new Error(result.message);
                   }
 
-                  alert("✅ Student updated successfully!");
+                  showNotification("✅ Student updated successfully!", 'success');
                   fetchStudents();
               } catch (error) {
                   console.error("❌ Error updating student:", error.message);
-                  alert(error.message);
+                  showNotification(error.message, 'error');
+              } finally {
+                  hideLoading();
               }
           }
       }
 
       if (target.classList.contains("delete-button")) {
           if (confirm("⚠️ Are you sure you want to delete this student?")) {
+              showLoading();
               try {
-                  const res = await fetch(`${API_BASE_URL}/${id}`, {
-                      method: "DELETE",
-                      headers: { "Content-Type": "application/json" }
-                  });
+                  const result = await api.deleteStudent(id);
 
-                  if (!res.ok) {
-                      const errorData = await res.json();
-                      throw new Error(errorData.error || "Error deleting student");
+                  if (!result.success) {
+                      throw new Error(result.message);
                   }
 
-                  alert("✅ Student deleted successfully!");
+                  showNotification("✅ Student deleted successfully!", 'success');
                   fetchStudents();
               } catch (error) {
                   console.error("❌ Error deleting student:", error.message);
-                  alert(`Error deleting student: ${error.message}`);
+                  showNotification(`Error deleting student: ${error.message}`, 'error');
+              } finally {
+                  hideLoading();
               }
           }
       }
   });
-
-  
 
   fetchStudents();
 });

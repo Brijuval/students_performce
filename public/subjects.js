@@ -2,32 +2,41 @@ document.addEventListener("DOMContentLoaded", () => {
   const subjectForm = document.getElementById("subjectForm");
   const subjectsBody = document.getElementById("subjectsBody");
 
-  const API_BASE_URL = "http://localhost:5000/api/subjects";
-
   // Fetch and display all subjects
-  async function fetchSubjects() {
+  async function fetchSubjects(params = {}) {
+    showLoading();
     try {
-      const res = await fetch(API_BASE_URL);
-      if (!res.ok) throw new Error("Failed to fetch subjects");
+      const result = await api.getSubjects(params);
 
-      const subjects = await res.json();
-      subjectsBody.innerHTML = ""; // Clear table before adding new data
+      if (!result.success) {
+        throw new Error(result.message);
+      }
+
+      const subjects = Array.isArray(result.data)
+        ? result.data
+        : (result.data?.results || result.data?.subjects || []);
+
+      subjectsBody.innerHTML = "";
 
       subjects.forEach(subject => {
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${subject.name}</td>
-          <td>${subject.subjectCode}</td>
+          <td>${subject.subjectCode || subject.code || subject.subject_code || ''}</td>
           <td>
-            <button class="edit-button" data-id="${subject._id}" data-name="${subject.name}" data-credit="${subject.credit || 3}">Edit</button>
-            <button class="delete-button" data-id="${subject._id}">Delete</button>
+            <button class="edit-button" data-id="${subject.id || subject._id}"
+                    data-name="${subject.name}"
+                    data-credit="${subject.credit || 3}">Edit</button>
+            <button class="delete-button" data-id="${subject.id || subject._id}">Delete</button>
           </td>
         `;
         subjectsBody.appendChild(row);
       });
     } catch (err) {
       console.error("Error fetching subjects:", err);
-      alert("Error fetching subjects. Please check the server.");
+      showNotification("Error fetching subjects. Please check the server.", 'error');
+    } finally {
+      hideLoading();
     }
   }
 
@@ -40,27 +49,26 @@ document.addEventListener("DOMContentLoaded", () => {
     const credit = 3; // Default credit value
 
     if (!name || !subjectCode) {
-      alert("All fields are required!");
+      showNotification("All fields are required!", 'error');
       return;
     }
 
+    showLoading();
     try {
-      const res = await fetch(API_BASE_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, subjectCode, credit })
-      });
+      const result = await api.createSubject({ name, subjectCode, credit });
 
-      if (res.ok) {
-        alert("Subject added successfully");
-        subjectForm.reset();
-        fetchSubjects();
-      } else {
-        const errorData = await res.json();
-        alert("Error adding subject: " + errorData.error);
+      if (!result.success) {
+        throw new Error(result.message);
       }
+
+      showNotification("Subject added successfully", 'success');
+      subjectForm.reset();
+      fetchSubjects();
     } catch (error) {
       console.error("Error adding subject:", error);
+      showNotification("Error adding subject: " + error.message, 'error');
+    } finally {
+      hideLoading();
     }
   });
 
@@ -77,40 +85,45 @@ document.addEventListener("DOMContentLoaded", () => {
       const newCredit = prompt("Enter new credit value:", currentCredit);
 
       if (newName && newCredit) {
+        showLoading();
         try {
-          const res = await fetch(`${API_BASE_URL}/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name: newName, credit: parseInt(newCredit) })
+          const result = await api.updateSubject(id, {
+            name: newName,
+            credit: parseInt(newCredit)
           });
 
-          if (res.ok) {
-            alert("Subject updated successfully");
-            fetchSubjects();
-          } else {
-            const errorData = await res.json();
-            alert("Error updating subject: " + errorData.error);
+          if (!result.success) {
+            throw new Error(result.message);
           }
+
+          showNotification("Subject updated successfully", 'success');
+          fetchSubjects();
         } catch (error) {
           console.error("Error updating subject:", error);
+          showNotification("Error updating subject: " + error.message, 'error');
+        } finally {
+          hideLoading();
         }
       }
     }
 
     if (target.classList.contains("delete-button")) {
       if (confirm("Are you sure you want to delete this subject?")) {
+        showLoading();
         try {
-          const res = await fetch(`${API_BASE_URL}/${id}`, { method: "DELETE" });
+          const result = await api.deleteSubject(id);
 
-          if (res.ok) {
-            alert("Subject deleted successfully");
-            fetchSubjects();
-          } else {
-            const errorData = await res.json();
-            alert("Error deleting subject: " + errorData.error);
+          if (!result.success) {
+            throw new Error(result.message);
           }
+
+          showNotification("Subject deleted successfully", 'success');
+          fetchSubjects();
         } catch (error) {
           console.error("Error deleting subject:", error);
+          showNotification("Error deleting subject: " + error.message, 'error');
+        } finally {
+          hideLoading();
         }
       }
     }
