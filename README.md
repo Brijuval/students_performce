@@ -212,7 +212,6 @@ database_host=localhost
 database_port=5432
 CORS_ALLOWED_ORIGINS=http://localhost:5500
 ```
-
 See [SETUP.md](SETUP.md) for a full setup walkthrough and [DEPLOYMENT.md](DEPLOYMENT.md) for production configuration.
 
 ## Troubleshooting
