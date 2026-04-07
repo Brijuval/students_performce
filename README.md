@@ -42,7 +42,7 @@ The system consists of a **Node.js/Express/MongoDB** backend (original), a **Dja
 - **Request Logging** – All requests and errors are logged to `logs/app.log`
 
 ## Tech Stack
-
+_______________________________________________________________
 | Layer     | Technology                                       |
 |-----------|--------------------------------------------------|
 | Backend   | Python 3.x, Django, Django REST Framework        |
