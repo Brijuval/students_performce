@@ -96,7 +96,6 @@ students_performce/
 - Python 3.9+
 - PostgreSQL 13+
 - Node.js 16+ and npm (for legacy backend or frontend dev server)
-
 ### Django Backend Setup
 
 ```bash
